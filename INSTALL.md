@@ -2,7 +2,7 @@
 
 Our [Colab Notebook](https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5)
 has step-by-step instructions that install detectron2.
-The [Dockerfile](https://github.com/facebookresearch/detectron2/blob/master/docker/Dockerfile)
+The [Dockerfile](docker/Dockerfile)
 also installs detectron2 with a few simple commands.
 
 ### Requirements
@@ -11,12 +11,12 @@ also installs detectron2 with a few simple commands.
 - [torchvision](https://github.com/pytorch/vision/) that matches the PyTorch installation.
 	You can install them together at [pytorch.org](https://pytorch.org) to make sure of this.
 - OpenCV, optional, needed by demo and visualization
-- pycocotools: `pip install cython; pip install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'`
+- pycocotools: `pip install cython; pip install -U 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'`
 
 
 ### Build Detectron2 from Source
 
-After having the above dependencies and gcc & g++ ≥ 4.9, run:
+After having the above dependencies and gcc & g++ ≥ 5, run:
 ```
 python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
 # (add --user if you don't have permission)
@@ -44,7 +44,7 @@ Note that:
    It will not work with your custom build of PyTorch.
 2. Such installation is out-of-date w.r.t. master branch of detectron2. It may not be
 	 compatible with the master branch of a research project that uses detectron2 (e.g. those in
-	 [projects](./projects) or [meshrcnn](https://github.com/facebookresearch/meshrcnn/)).
+	 [projects](projects) or [meshrcnn](https://github.com/facebookresearch/meshrcnn/)).
 
 ### Common Installation Issues
 
@@ -58,27 +58,36 @@ Undefined torch/aten/caffe2 symbols, or segmentation fault immediately when runn
 </summary>
 <br/>
 
-This can happen if detectron2 or torchvision is not
+This usually happens when detectron2 or torchvision is not
 compiled with the version of PyTorch you're running.
 
-If you use a pre-built torchvision, uninstall torchvision & pytorch, and reinstall them
-following [pytorch.org](http://pytorch.org).
-If you manually build detectron2 or torchvision, remove the files you built (`build/`, `**/*.so`)
-and rebuild them.
+Pre-built torchvision or detectron2 has to work with the corresponding official release of pytorch.
+If the error comes from a pre-built torchvision, uninstall torchvision and pytorch and reinstall them
+following [pytorch.org](http://pytorch.org). So the versions will match.
 
-If you cannot resolve the problem, please include the output of `gdb -ex "r" -ex "bt" -ex "quit" --args python -m detectron2.utils.collect_env`
+If the error comes from a pre-built detectron2, check [release notes](https://github.com/facebookresearch/detectron2/releases)
+to see the corresponding pytorch version required for each pre-built detectron2.
+
+If the error comes from detectron2 or torchvision that you built manually from source,
+remove files you built (`build/`, `**/*.so`) and rebuild it so it can pick up the version of pytorch currently in your environment.
+
+If you cannot resolve this problem, please include the output of `gdb -ex "r" -ex "bt" -ex "quit" --args python -m detectron2.utils.collect_env`
 in your issue.
 </details>
 
 <details>
 <summary>
-Undefined C++ symbols in `detectron2/_C*.so`.
+Undefined C++ symbols (e.g. `GLIBCXX`) or C++ symbols not found.
 </summary>
 <br/>
-Usually it's because the library is compiled with a newer C++ compiler but run with an old C++ run time.
-This can happen with old anaconda.
+Usually it's because the library is compiled with a newer C++ compiler but run with an old C++ runtime.
 
+This often happens with old anaconda.
 Try `conda update libgcc`. Then rebuild detectron2.
+
+The fundamental solution is to run the code with proper C++ runtime.
+One way is to use `LD_PRELOAD=/path/to/libstdc++.so`.
+
 </details>
 
 <details>
@@ -94,6 +103,8 @@ python -c 'import torch; from torch.utils.cpp_extension import CUDA_HOME; print(
 ```
 
 print valid outputs at the time you build detectron2.
+
+Most models can run inference (but not training) without GPU support. To use CPUs, set `MODEL.DEVICE='cpu'` in the config.
 </details>
 
 <details>
@@ -120,10 +131,10 @@ Two possibilities:
 	`python -m detectron2.utils.collect_env`.
 
 	The GPU architecture flags of detectron2/torchvision by default matches the GPU model detected
-	during building. This means the compiled code may not work on a different GPU model.
-	To overwrite the GPU architecture for detectron2/torchvision, use `TORCH_CUDA_ARCH_LIST` environment variable during building.
+	during compilation. This means the compiled code may not work on a different GPU model.
+	To overwrite the GPU architecture for detectron2/torchvision, use `TORCH_CUDA_ARCH_LIST` environment variable during compilation.
 
-	For example, `export TORCH_CUDA_ARCH_LIST=6.0,7.0` makes it work for both P100s and V100s.
+	For example, `export TORCH_CUDA_ARCH_LIST=6.0,7.0` makes it compile for both P100s and V100s.
 	Visit [developer.nvidia.com/cuda-gpus](https://developer.nvidia.com/cuda-gpus) to find out
 	the correct compute compatibility number for your device.
 
@@ -154,6 +165,9 @@ to match your local CUDA installation, or install a different version of CUDA to
 </summary>
 <br/>
 Please build and install detectron2 following the instructions above.
+
+If you are running code from detectron2's root directory, `cd` to a different one.
+Otherwise you may not import the code that you installed.
 </details>
 
 <details>
@@ -161,6 +175,8 @@ Please build and install detectron2 following the instructions above.
 ONNX conversion segfault after some "TraceWarning".
 </summary>
 <br/>
-Build and install ONNX from its source code using a compiler
+The ONNX package is compiled with too old compiler.
+
+Please build and install ONNX from its source code using a compiler
 whose version is closer to what's used by PyTorch (available in `torch.__config__.show()`).
 </details>

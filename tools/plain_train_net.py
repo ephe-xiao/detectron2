@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 """
 Detectron2 training script with a plain training loop.
@@ -213,7 +214,7 @@ def main(args):
             model, device_ids=[comm.get_local_rank()], broadcast_buffers=False
         )
 
-    do_train(cfg, model)
+    do_train(cfg, model, resume=args.resume)
     return do_test(cfg, model)
 
 

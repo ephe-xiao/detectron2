@@ -5,7 +5,7 @@
 This file documents a large collection of baselines trained
 with detectron2 in Sep-Oct, 2019.
 All numbers were obtained on [Big Basin](https://engineering.fb.com/data-center-engineering/introducing-big-basin-our-next-generation-ai-hardware/)
-servers with 8 NVIDIA V100 GPUs & NVLink. The softwares in use were PyTorch 1.3, CUDA 9.2, cuDNN 7.4.2 or 7.6.3.
+servers with 8 NVIDIA V100 GPUs & NVLink. The software in use were PyTorch 1.3, CUDA 9.2, cuDNN 7.4.2 or 7.6.3.
 You can access these models from code using [detectron2.model_zoo](https://detectron2.readthedocs.io/modules/model_zoo.html) APIs.
 
 In addition to these official baseline models, you can find more models in [projects/](projects/).
@@ -50,9 +50,9 @@ In addition to these official baseline models, you can find more models in [proj
 
 We provide backbone models pretrained on ImageNet-1k dataset.
 These models have __different__ format from those provided in Detectron: we do not fuse BatchNorm into an affine layer.
-* [R-50.pkl](https://dl.fbaipublicfiles.com/detectron2/ImageNetPretrained/MSRA/R-50.pkl): converted copy of MSRA's original ResNet-50 model
-* [R-101.pkl](https://dl.fbaipublicfiles.com/detectron2/ImageNetPretrained/MSRA/R-101.pkl): converted copy of MSRA's original ResNet-101 model
-* [X-101-32x8d.pkl](https://dl.fbaipublicfiles.com/detectron2/ImageNetPretrained/FAIR/X-101-32x8d.pkl): ResNeXt-101-32x8d model trained with Caffe2 at FB
+* [R-50.pkl](https://dl.fbaipublicfiles.com/detectron2/ImageNetPretrained/MSRA/R-50.pkl): converted copy of [MSRA's original ResNet-50](https://github.com/KaimingHe/deep-residual-networks) model.
+* [R-101.pkl](https://dl.fbaipublicfiles.com/detectron2/ImageNetPretrained/MSRA/R-101.pkl): converted copy of [MSRA's original ResNet-101](https://github.com/KaimingHe/deep-residual-networks) model.
+* [X-101-32x8d.pkl](https://dl.fbaipublicfiles.com/detectron2/ImageNetPretrained/FAIR/X-101-32x8d.pkl): ResNeXt-101-32x8d model trained with Caffe2 at FB.
 
 Pretrained models in Detectron's format can still be used. For example:
 * [X-152-32x8d-IN5k.pkl](https://dl.fbaipublicfiles.com/detectron/ImageNetPretrained/25093814/X-152-32x8d-IN5k.pkl):
@@ -61,6 +61,8 @@ Pretrained models in Detectron's format can still be used. For example:
   ResNet-50 with Group Normalization.
 * [R-101-GN.pkl](https://dl.fbaipublicfiles.com/detectron/ImageNetPretrained/47592356/R-101-GN.pkl):
   ResNet-101 with Group Normalization.
+
+Torchvision's ResNet models can be used after converted by [this script](tools/convert-torchvision-to-d2.py).
 
 #### License
 
@@ -793,7 +795,7 @@ Ablations for normalization methods:
 <!-- ROW: mask_rcnn_R_50_FPN_3x_syncbn -->
  <tr><td align="left"><a href="configs/Misc/mask_rcnn_R_50_FPN_3x_syncbn.yaml">SyncBN</a></td>
 <td align="center">3x</td>
-<td align="center">0.412</td>
+<td align="center">0.371</td>
 <td align="center">0.053</td>
 <td align="center">5.5</td>
 <td align="center">41.9</td>
